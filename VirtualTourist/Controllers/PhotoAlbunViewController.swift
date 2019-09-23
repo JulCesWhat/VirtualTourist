@@ -42,7 +42,7 @@ class PhotoAlbumViewController: UICollectionViewController {
         
         setMapView()
         setupFetchedResultsController()
-        downloadPhotoMetadata()
+        downloadPhotoMetadata(newData: 0)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -53,7 +53,7 @@ class PhotoAlbumViewController: UICollectionViewController {
     @IBAction func RemoveImages(_ sender: Any) {
         if newCollectionBtn.title == "New Collection" {
             removeExistingImages()
-            downloadPhotoMetadata()
+            downloadPhotoMetadata(newData: 1)
         } else {
             removeSelectedImages()
         }
@@ -80,16 +80,20 @@ class PhotoAlbumViewController: UICollectionViewController {
         }
     }
     
-    func downloadPhotoMetadata() {
+    func downloadPhotoMetadata(newData: Int) {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+        noPictureLabel.isHidden = true
         guard (fetchedResultsController.fetchedObjects?.isEmpty)! else {
+            activityIndicator.isHidden = true
+            activityIndicator.stopAnimating()
             print("image metadata is already present. no need to re download")
             return
         }
         
         print("About to start downloading of images metadata")
         
-        FlickerClient.getPhotos(latitude: mapAnnotation.coordinate.latitude, longitude: mapAnnotation.coordinate.longitude) { (photos, error) in
-//            print(photos.count)
+        FlickerClient.getPhotos(latitude: mapAnnotation.coordinate.latitude, longitude: mapAnnotation.coordinate.longitude, totalNumPicsAvailable: newData) { (photos, error) in
             if photos.count > 0 {
                 DispatchQueue.main.async {
                     for photo in photos {
@@ -105,16 +109,15 @@ class PhotoAlbumViewController: UICollectionViewController {
                             print("Unable to save the photo")
                         }
                     }
-                    self.activityIndicator.isHidden = true
-                    self.noPictureLabel.isHidden = true
                     
-//                    self.photoCollectionView.reloadData()
-//                    print(self.photosArray.count)
                     print("capi")
                 }
             } else {
+                self.noPictureLabel.isHidden = false
                 print("There was an error!!")
             }
+            self.activityIndicator.isHidden = true
+            self.activityIndicator.stopAnimating()
         }
     }
     
