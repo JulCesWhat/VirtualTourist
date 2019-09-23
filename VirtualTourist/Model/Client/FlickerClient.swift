@@ -25,7 +25,7 @@ class FlickerClient {
         return randomPageNum
     }
     
-    class func getFlickerUrl(latitude: Double, longitude: Double, totalNumPicsAvailable: Int = 0, updatedNumPicsToDisplay: Int = 12, maxNumPicsDisplayed: Int = 12) -> URL {
+    class func getFlickerUrl(latitude: Double, longitude: Double, totalNumPicsAvailable: Int = 0, updatedNumPicsToDisplay: Int = 15, maxNumPicsDisplayed: Int = 15) -> URL {
         
         let radius = 20
         let perPage = updatedNumPicsToDisplay

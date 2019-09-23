@@ -16,6 +16,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     var dataController: DataController!
     
     var selectedAnnotation: MKPointAnnotation?
+    var fetchedResultsController: NSFetchedResultsController<LocationD>!
     var selectedLocationD: LocationD?
     
     override func viewDidLoad() {
@@ -33,6 +34,24 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        
+        setUpFetchedResultsController()
+    }
+    
+    // MARK: Setting up the fetched results controller
+    private func setUpFetchedResultsController() {
+        let fetchRequest: NSFetchRequest<LocationD> = LocationD.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: dataController.viewContext, sectionNameKeyPath: nil, cacheName: "locationd")
+        
+        fetchedResultsController.delegate = self
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            fatalError("TravelLocationsVC: Unable to fetch the results")
+        }
     }
     
     func fetchAllLocationD() -> [MKAnnotation] {
@@ -174,9 +193,4 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             controller.dataController = self.dataController
         }
     }
-}
-
-
-extension MapViewController: NSFetchedResultsControllerDelegate {
-    
 }
