@@ -25,12 +25,11 @@ class FlickerClient {
         return randomPageNum
     }
     
-    class func getFlickerUrl(latitude: Double, longitude: Double, totalNumPicsAvailable: Int = 0, updatedNumPicsToDisplay: Int = 15, maxNumPicsDisplayed: Int = 15) -> URL {
+    class func getFlickerUrl(latitude: Double, longitude: Double, totalPageAmount: Int = 0, picsPerPage: Int = 15) -> URL {
         
         let radius = 20
-        let perPage = updatedNumPicsToDisplay
-        let pageNum = totalNumPicsAvailable > 0 ?
-            getRandomPageNum(totalPicsAvailable: totalNumPicsAvailable, maxNumPicsDisplayed: maxNumPicsDisplayed) : 1
+        let perPage = picsPerPage
+        let pageNum = getRandomPageNum(totalPicsAvailable: totalPageAmount, maxNumPicsDisplayed: picsPerPage)
         
         let searchURLString = "https://www.flickr.com/services/rest/?method=flickr.photos.search" +
             "&api_key=\(FlickerClient.apiKey)" +
@@ -40,7 +39,7 @@ class FlickerClient {
             "&per_page=\(perPage)" +
             "&page=\(pageNum)" +
         "&format=json&nojsoncallback=1&extras=url_m"
-        print(searchURLString)
+        print("\n" + searchURLString + "\n")
         
          return URL(string: searchURLString)!
     }
@@ -79,13 +78,13 @@ class FlickerClient {
         return task
     }
     
-    class func getPhotos(latitude: Double, longitude: Double, totalNumPicsAvailable: Int = 0, completion: @escaping ([Photo], Error?) -> Void) -> Void {
-        let url = getFlickerUrl(latitude: latitude, longitude: longitude, totalNumPicsAvailable: totalNumPicsAvailable)
+    class func getPhotos(latitude: Double, longitude: Double, totalPageAmount: Int = 0, completion: @escaping ([Photo], Int, Error?) -> Void) -> Void {
+        let url = getFlickerUrl(latitude: latitude, longitude: longitude, totalPageAmount: totalPageAmount)
         let _ = taskForGETRequest(url: url, responseType: PictureReponse.self) { response, error in
             if let response = response {
-                completion(response.photos.photo, nil)
+                completion(response.photos.photo, response.photos.pages, nil)
             } else {
-                completion([], error)
+                completion([], 0, error)
             }
         }
     }

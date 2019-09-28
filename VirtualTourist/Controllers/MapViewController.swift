@@ -53,6 +53,9 @@ class MapViewController: UIViewController {
     }
     
     @IBAction func onPress(_ sender: UILongPressGestureRecognizer) {
+        if sender.state != .began {
+            return
+        }
         let touchPoint = sender.location(in: mapView)
         let newCoordinates = mapView.convert(touchPoint, toCoordinateFrom: mapView)
         let annotation = MKPointAnnotation()
@@ -113,6 +116,7 @@ class MapViewController: UIViewController {
         locationD.latitude = annotation.coordinate.latitude
         locationD.title = annotation.title
         locationD.subTitle = annotation.subtitle
+        locationD.pages = 0
         try? dataController.viewContext.save()
     }
     
@@ -131,6 +135,8 @@ extension MapViewController: MKMapViewDelegate  {
     
     // Fetch pins and add them to map view
     func loadMapLocations() {
+        self.mapView.removeAnnotations(self.mapView.annotations)
+        
         if let locationsD = fetchedResultsController.fetchedObjects {
             for location in locationsD  {
                 let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)

@@ -42,7 +42,7 @@ class PhotoAlbumViewController: UICollectionViewController {
         
         setMapView()
         setupFetchedResultsController()
-        downloadPhotoMetadata(newData: 0)
+        downloadPhotoMetadata()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -53,7 +53,7 @@ class PhotoAlbumViewController: UICollectionViewController {
     @IBAction func RemoveImages(_ sender: Any) {
         if newCollectionBtn.title == "New Collection" {
             removeExistingImages()
-            downloadPhotoMetadata(newData: 1)
+            downloadPhotoMetadata()
         } else {
             removeSelectedImages()
         }
@@ -80,7 +80,7 @@ class PhotoAlbumViewController: UICollectionViewController {
         }
     }
     
-    func downloadPhotoMetadata(newData: Int) {
+    func downloadPhotoMetadata() {
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
         noPictureLabel.isHidden = true
@@ -92,10 +92,14 @@ class PhotoAlbumViewController: UICollectionViewController {
         }
         
         print("About to start downloading of images metadata")
+        let pagesCount = Int(self.locationD.pages)
         
-        FlickerClient.getPhotos(latitude: mapAnnotation.coordinate.latitude, longitude: mapAnnotation.coordinate.longitude, totalNumPicsAvailable: newData) { (photos, error) in
+        FlickerClient.getPhotos(latitude: mapAnnotation.coordinate.latitude, longitude: mapAnnotation.coordinate.longitude, totalPageAmount: pagesCount) { (photos, totalPages, error) in
             if photos.count > 0 {
                 DispatchQueue.main.async {
+                    if (pagesCount == 0) {
+                        self.locationD.pages = Int32(Int(totalPages))
+                    }
                     for photo in photos {
                         let newPhoto = PhotoD(context: self.dataController.viewContext)
                         newPhoto.imageUrl = URL(string: photo.urlM)

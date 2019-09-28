@@ -4,6 +4,7 @@
         <attribute name="creationDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="pages" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="subTitle" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="PhotoD" inverseName="location" inverseEntity="PhotoD"/>
@@ -16,7 +17,7 @@
         <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LocationD" inverseName="photos" inverseEntity="LocationD"/>
     </entity>
     <elements>
-        <element name="LocationD" positionX="-252.8671875" positionY="-12.35546875" width="128" height="133"/>
+        <element name="LocationD" positionX="-252.8671875" positionY="-12.35546875" width="128" height="148"/>
         <element name="PhotoD" positionX="-76.7265625" positionY="17.66015625" width="128" height="118"/>
     </elements>
 </model>
